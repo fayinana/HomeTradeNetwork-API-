@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 dotenv.config({
   path: ".env",
 });
-console.log(process.env.LOCAL_DATABASE);
 mongoose
   .connect(process.env.LOCAL_DATABASE)
   .then((con) => {
@@ -17,7 +16,7 @@ mongoose
 const app = require("./app");
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
 
