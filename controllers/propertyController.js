@@ -1,8 +1,20 @@
 const catchAsync = require("./../Utils/catchAsync");
 const Property = require("./../models/propertyModel");
-
+const APIFeatures = require("./../Utils/apiFeatures");
+exports.getTopFive = (req, res, next) => {
+  req.query = {
+    sort: "price",
+    limit: 4,
+  };
+  next();
+};
 exports.getAllProperty = catchAsync(async (req, res, next) => {
-  const properties = await Property.find();
+  const features = new APIFeatures(Property.find(), req.query)
+    .filter()
+    .sort()
+    .limitField()
+    .paginate();
+  const properties = await features.query;
   res.status(201).json({
     status: "success",
     result: properties.length,
@@ -13,7 +25,7 @@ exports.getAllProperty = catchAsync(async (req, res, next) => {
 });
 exports.getProperty = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  const property = await Property.findById(id);
+  const property = await Property.findById(id).populate("reviews");
   res.status(201).json({
     status: "success",
     data: {
