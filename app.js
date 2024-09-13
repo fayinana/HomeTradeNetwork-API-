@@ -6,9 +6,15 @@ const reviewRouter = require("./Routes/reviewRoute");
 const cookieParser = require("cookie-parser");
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./Utils/appError");
+const cors = require("cors");
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors())
+const corsOptions = {
+  origin: ["http://localhost:5173"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/properties", propertyRouter);
 app.use("/api/v1/reviews", reviewRouter);

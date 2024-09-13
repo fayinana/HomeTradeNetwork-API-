@@ -1,0 +1,69 @@
+const factory = require("./handlerFactory");
+const User = require("./../models/userModel");
+const AppError = require("./../Utils/appError");
+const catchAsync = require("../Utils/catchAsync");
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+
+  return newObj;
+};
+
+exports.createUser = catchAsync(async (req, res, next) => {
+  res.status(201).json({
+    status: "error",
+    message: "this route is not defined! please use /signup route instead",
+  });
+});
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password) {
+    return next(
+      new AppError(
+        "this is not the route to change password! user updateMyPassword",
+        404
+      )
+    );
+  }
+  const filteredBody = filterObj(req.body, "name", "email");
+
+  const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
+    },
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { active: false },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(203).json({
+    status: "success",
+  });
+});
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+};
+
+// FOR ADMIN
+exports.getUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.deleteUser = factory.deleteOne(User);
+exports.updateUser = factory.updateOne(User);

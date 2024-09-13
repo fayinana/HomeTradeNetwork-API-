@@ -16,7 +16,7 @@ const reviewSchema = new mongoose.Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now, // Set default to now
+      default: Date.now,
     },
     property: {
       type: mongoose.Schema.ObjectId,
@@ -36,12 +36,10 @@ const reviewSchema = new mongoose.Schema(
 );
 reviewSchema.index({ property: 1, user: 1 }, { unique: true });
 
-// Populate user details on find
 reviewSchema.pre(/^find/, function () {
   this.populate([{ path: "user", select: "name photo" }]);
 });
 
-// Calculate average rating
 reviewSchema.statics.calcAverageRating = async function (propertyId) {
   const stats = await this.aggregate([
     {

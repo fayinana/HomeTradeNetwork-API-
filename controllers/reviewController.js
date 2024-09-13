@@ -1,37 +1,14 @@
 const Review = require("./../models/reviewModel");
-const catchAsync = require("./../Utils/catchAsync");
 const factory = require("./handlerFactory");
 
-exports.getAllReview = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+exports.setTourUserIds = (req, res, next) => {
+  if (!req.body.property) req.body.property = req.params.propertyId;
+  if (!req.body.user) req.body.user = req.user._id;
+  next();
+};
 
-  res.status(200).json({
-    status: "success",
-    result: reviews.length,
-    data: {
-      reviews,
-    },
-  });
-});
-exports.getReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      review,
-    },
-  });
-});
+exports.getAllReview = factory.getAll(Review);
+exports.getReview = factory.getOne(Review);
 exports.createReview = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);
-exports.deleteReview = catchAsync(async (req, res, next) => {
-  console.log(req.params.id);
-  const doc = await Review.findByIdAndDelete(req.params.id);
-  if (!doc)
-    return next(new AppError("Invalid ID no document found with that Id", 404));
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
+exports.deleteReview = factory.deleteOne(Review);
