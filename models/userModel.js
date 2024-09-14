@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema({
       message: "Passwords must match",
     },
   },
+  role: {
+    type: String,
+    default: "user",
+    enum: ["user", "admin"],
+  },
   address: {
     type: {
       type: String,
@@ -91,15 +96,3 @@ userSchema.methods.createPasswordResatToken = function () {
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-// 6.2.1 User Model
-// •	id: Unique identifier for the user./
-// •	email: User's email address (unique)/.
-// •	username: User's username (unique)./
-// •	password: User's password (hashed).
-// •	phonenumber: User's phone number (unique).
-// •	address: User's address.
-// •	avatar: URL to the user's avatar image (optional).
-// •	createdAt: Timestamp when the user was created.
-// •	posts: A list of posts created by the user.
-// •	savedPosts: A list of posts saved by the user.
-// •	chats: A list of chat IDs the user is involved in.

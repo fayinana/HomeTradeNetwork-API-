@@ -33,16 +33,21 @@ exports.updateOne = (Model) =>
       },
     });
   });
-
 exports.getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
-    if (popOptions) query = query.populate(popOptions);
+    if (popOptions) {
+      query = query.populate(popOptions);
+    }
+    if (req.query.isActive) {
+      query = query.where({ isActive: req.query.isActive });
+    }
     const doc = await query;
-    if (!doc)
+    if (!doc) {
       return next(
-        new AppError("Invalid ID no document found with that Id", 404)
+        new AppError("Invalid ID: no document found with that ID", 404)
       );
+    }
     res.status(200).json({
       status: "success",
       data: {
