@@ -1,7 +1,54 @@
+const multer = require("multer");
+const sharp = require("sharp");
 const AppError = require("../Utils/appError");
 const catchAsync = require("../Utils/catchAsync");
 const Property = require("./../models/propertyModel");
 const factory = require("./handlerFactory");
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("not an image! please upload only image "), false);
+  }
+};
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadPropertyImages = upload.fields([
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 10 },
+]);
+
+exports.resizePropertyImages = catchAsync(async (req, res, next) => {
+  console.log(req.body);
+  const githubURL =
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/property/";
+  if (!req.files.images || !req.files.images) return next();
+  const imageCoverFileName = `property-${
+    req.params.id
+  }-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`file/image/property/${imageCoverFileName}`);
+  req.body.imageCover = `${githubURL}${imageCoverFileName}`;
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `property-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`file/image/property/${filename}`);
+      req.body.images.push(`${githubURL}${filename}`);
+    })
+  );
+  next();
+});
 exports.getTopFive = (req, res, next) => {
   req.query.sort = "price";
   req.query.limit = 4;

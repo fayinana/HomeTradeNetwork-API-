@@ -57,6 +57,10 @@ router
   .route("/myProperty/:id")
   .get(propertyController.getPropertyForOwner, propertyController.getProperty)
   .delete(propertyController.deleteMyProperty)
-  .patch(propertyController.updateMyProperty);
+  .patch(
+    propertyController.uploadPropertyImages,
+    propertyController.resizePropertyImages,
+    propertyController.updateMyProperty
+  );
 
 module.exports = router;

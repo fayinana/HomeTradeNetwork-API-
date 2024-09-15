@@ -93,6 +93,12 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // taxDocument: {
+    //   type: String,
+    // },
+    // sitPlanDocument: {
+    //   type: String,
+    // },
   },
   {
     toJSON: { virtuals: true },
