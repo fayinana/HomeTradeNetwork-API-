@@ -43,7 +43,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   const githubURL =
-    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user";
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user/";
   if (req.body.password) {
     return next(
       new AppError(
