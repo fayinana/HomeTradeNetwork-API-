@@ -10,12 +10,7 @@ const multerStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    cb(
-      null,
-      `https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user/user-${
-        req.user._id
-      }-${Date.now()}.${ext}`
-    );
+    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
   },
 });
 
@@ -47,6 +42,8 @@ exports.createUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  const githubURL =
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user";
   if (req.body.password) {
     return next(
       new AppError(
@@ -56,7 +53,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
   }
   const filteredBody = filterObj(req.body, "name", "email");
-  if (req.file) filteredBody.photo = req.file.filename;
+  if (req.file) filteredBody.photo = `${githubURL}${req.file.filename}`;
 
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
