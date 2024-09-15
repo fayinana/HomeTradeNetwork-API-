@@ -46,7 +46,10 @@ const userSchema = new mongoose.Schema({
     coordinates: [Number],
     description: String,
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: "default.jpg",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
