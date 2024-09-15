@@ -10,7 +10,12 @@ const multerStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+    cb(
+      null,
+      `https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user/user-${
+        req.user._id
+      }-${Date.now()}.${ext}`
+    );
   },
 });
 
