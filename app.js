@@ -22,5 +22,45 @@ app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
+const { Server } = require("socket.io");
+
+const io = new Server(3500, {
+  cors: corsOptions,
+});
+let onlineUsers = [];
+
+const addNewUser = (userId, socketId) => {
+  const userExists = onlineUsers.some((user) => user.userId === userId);
+  if (!userExists) {
+    onlineUsers.push({ userId, socketId });
+    console.log("User added:", { userId, socketId });
+  } else {
+    console.log("User already exists:", userId);
+  }
+};
+const removeUser = (socketId) => {
+  onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
+};
+const getUser = (userId) => {
+  return onlineUsers.find((user) => user.userId === userId);
+};
+
+io.on("connection", (socket) => {
+  console.log("con");
+
+  socket.on("newUser", (userId) => {
+    addNewUser(userId, socket.id);
+  });
+  socket.on("activateDisActivate", ({ receiverId, adminId, value }) => {
+    const receiver = getUser(receiverId);
+    io.to(receiver?.socketId).emit("getNotification", "here is a test");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("disCon");
+    removeUser(socket.id);
+  });
+});
+
 app.use(globalErrorHandler);
 module.exports = app;

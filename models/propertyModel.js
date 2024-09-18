@@ -51,7 +51,7 @@ const propertySchema = new mongoose.Schema(
     },
     propertyType: {
       type: String,
-      enum: ["apartment", "house", "condo", "land"],
+      enum: ["apartment", "house", "condominium", "land"],
       required: true,
     },
     bedrooms: {
@@ -78,8 +78,8 @@ const propertySchema = new mongoose.Schema(
     ratingsAverage: {
       type: Number,
       default: 4.5,
-      max: [5, "A tour rating average have to be less than 5 "],
-      min: [1, "A tour rating average have to be grater than 1 "],
+      max: [5, "A property rating average have to be less than 5 "],
+      min: [1, "A property rating average have to be grater than 1 "],
       set: function (val) {
         return Math.round(val * 10) / 10;
       },

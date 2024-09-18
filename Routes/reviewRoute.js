@@ -4,7 +4,7 @@ const router = express.Router();
 router
   .route("/")
   .get(reviewController.getAllReview)
-  .post(reviewController.createReview);
+  .post(reviewController.setPropertyUserIds, reviewController.createReview);
 
 router
   .route("/:id")

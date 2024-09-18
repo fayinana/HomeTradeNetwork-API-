@@ -54,7 +54,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const filteredBody = filterObj(req.body, "name", "email");
+  const filteredBody = filterObj(req.body, "name", "email", "phone", "address");
   if (req.file) filteredBody.photo = `${githubURL}${req.file.filename}`;
 
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
@@ -91,6 +91,9 @@ exports.getMe = (req, res, next) => {
 
 // FOR ADMIN
 exports.getUsers = factory.getAll(User);
-exports.getUser = factory.getOne(User);
+exports.getUser = factory.getOne(User, {
+  path: "properties",
+  select: "title isActive price type",
+});
 exports.deleteUser = factory.deleteOne(User);
 exports.updateUser = factory.updateOne(User);

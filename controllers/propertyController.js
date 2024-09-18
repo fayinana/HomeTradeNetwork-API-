@@ -22,10 +22,9 @@ exports.uploadPropertyImages = upload.fields([
 ]);
 
 exports.resizePropertyImages = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const githubURL =
     "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/property/";
-  if (!req.files.images || !req.files.images) return next();
+  if (!req?.files?.images || !req?.files?.images) return next();
   const imageCoverFileName = `property-${
     req.params.id
   }-${Date.now()}-cover.jpeg`;
@@ -63,7 +62,8 @@ exports.inActive = (req, res, next) => {
   next();
 };
 exports.hiddenDocuments = (req, res, next) => {
-  req.query.fields = "title,price,isActive";
+  req.query.fields =
+    "title,price,isActive,imageCover,discount,location,type,propertyType,ratingsAverage,ratingsQuantity";
   next();
 };
 
@@ -75,6 +75,11 @@ exports.getPropertyForOwner = (req, res, next) => {
 };
 exports.addOwner = (req, res, next) => {
   req.body.owner = req.user._id;
+  next();
+};
+
+exports.activateProperty = (req, res, next) => {
+  req.body = { isActive: req.body.isActive };
   next();
 };
 

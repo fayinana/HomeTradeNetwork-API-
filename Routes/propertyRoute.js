@@ -47,7 +47,11 @@ router
 router
   .route("/allProperties/:id")
   .get(authController.restrictTo("admin"), propertyController.getProperty)
-  .patch(authController.restrictTo("admin"), propertyController.updateProperty)
+  .patch(
+    authController.restrictTo("admin"),
+    propertyController.activateProperty,
+    propertyController.updateProperty
+  )
   .delete(
     authController.restrictTo("admin"),
     propertyController.deleteMyProperty
