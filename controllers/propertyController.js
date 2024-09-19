@@ -68,6 +68,9 @@ exports.hiddenDocuments = (req, res, next) => {
 };
 
 exports.getPropertyForOwner = (req, res, next) => {
+  if (!req.user)
+    return next("you don`t gave a permeation to perform this action", 401);
+
   req.query = {
     owner: req.user._id,
   };

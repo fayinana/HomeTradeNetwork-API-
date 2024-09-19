@@ -4,6 +4,7 @@ const factory = require("./handlerFactory");
 const User = require("./../models/userModel");
 const AppError = require("./../Utils/appError");
 const catchAsync = require("../Utils/catchAsync");
+const { default: axios } = require("axios");
 
 const multerStorage = multer.memoryStorage();
 const multerFilter = (req, file, cb) => {
@@ -13,20 +14,49 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("not an image! please upload only image "), false);
   }
 };
+
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadUserPhoto = upload.single("photo");
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_API_URL = process.env.GITHUB_API_URL.replace(
+  "<GITHUB_REPO>",
+  GITHUB_REPO
+);
+
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
+
+  const filename = `user-${req.user._id}-${Date.now()}.jpeg`;
+  const buffer = await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
-    .toFile(`file/image/user/${req.file.filename}`);
+    .toBuffer();
 
+  const response = await axios.put(
+    `${GITHUB_API_URL}user/${filename}`,
+    {
+      message: `Upload photo ${filename}`,
+      content: buffer.toString("base64"),
+    },
+    {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (response.status !== 201) {
+    return next(new AppError("Failed to upload image to GitHub", 500));
+  }
+
+  req.file.filename = filename;
   next();
 });
+
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
@@ -45,7 +75,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   const githubURL =
-    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user/";
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/refs/heads/main/file/image/user/";
   if (req.body.password) {
     return next(
       new AppError(

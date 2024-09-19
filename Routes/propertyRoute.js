@@ -24,8 +24,9 @@ router
   .route("/allProperties")
   .get(authController.restrictTo("admin"), propertyController.getAllProperty);
 
-router.route(
-  "/inActiveProduct",
+router.get(
+  "/inActiveProperty",
+  authController.restrictTo("admin"),
   propertyController.inActive,
   propertyController.getAllProperty
 );
@@ -54,7 +55,7 @@ router
   )
   .delete(
     authController.restrictTo("admin"),
-    propertyController.deleteMyProperty
+    propertyController.deleteProperty
   );
 
 router
