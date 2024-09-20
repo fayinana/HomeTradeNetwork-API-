@@ -48,17 +48,15 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
   createSendToken(user, 201, res);
 });
-
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return next(new AppError("please enter your email and password", 403));
-
+  if (!email || !password) {
+    return next(new AppError("please provide your password and email"));
+  }
   const user = await User.findOne({ email }).select("+password");
-
-  if (!user || !user.passwordCorrect(password, user.password))
-    return next(new AppError("invalid email or password", 404));
-
+  if (!user || !(await user.passwordCorrect(password, user.password))) {
+    return next(new AppError("incorrect email or password", 404));
+  }
   createSendToken(user, 200, res);
 });
 
@@ -163,7 +161,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id).select("+password");
-  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+  if (!(await user.passwordCorrect(req.body.passwordCurrent, user.password))) {
     return next(new AppError("your current password is wrong", 401));
   }
   user.password = req.body.password;

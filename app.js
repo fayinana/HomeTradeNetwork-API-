@@ -43,17 +43,21 @@ const io = require("socket.io")(8900, {
 });
 
 io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
   });
-  io.emit("welcome", "what are you doing");
+
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
     const user = getUser(receiverId);
-    console.log({ senderId, receiverId, text });
-    io.to(user.socketId).emit("getMessage", { text, senderId });
+    if (user) {
+      io.to(user.socketId).emit("getMessage", { text, senderId });
+    } else {
+    }
   });
+
   socket.on("disconnect", () => {
-    console.log("User disconnected");
     removeUser(socket.id);
   });
 });

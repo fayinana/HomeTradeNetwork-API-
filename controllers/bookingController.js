@@ -10,10 +10,7 @@ exports.addCurrentUser = (req, res, next) => {
 exports.getBookingForOwner = (req, res, next) => {
   if (!req.user)
     return next("you don`t gave a permeation to perform this action", 401);
-  req.query = {
-    user: req.user._id,
-  };
-  next();
+  (req.query.user = req.user._id), next();
 };
 exports.updateOnlyStatus = (req, res, next) => {
   req.body = { state: req.body.state };

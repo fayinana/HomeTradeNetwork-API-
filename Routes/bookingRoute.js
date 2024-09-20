@@ -9,9 +9,9 @@ router
   .get(authController.restrictTo("admin"), bookingController.getBookings)
   .post(bookingController.addCurrentUser, bookingController.createBooking);
 router
-  .route("/:id")
-  .get(bookingController.getBookingForOwner, bookingController.getBooking);
-router.use(authController.restrictTo("admin"));
+  .route("/myBooking")
+  .get(bookingController.getBookingForOwner, bookingController.getBookings);
+// router.use(authController.restrictTo("admin"));
 router
   .route("/:id")
   .get(bookingController.getBooking)

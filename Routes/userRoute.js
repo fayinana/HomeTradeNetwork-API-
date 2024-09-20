@@ -19,7 +19,7 @@ router.patch(
   userController.updateMe
 );
 router.route("/me").get(userController.getMe, userController.getUser);
-
+router.patch("/changePassword", authController.updatePassword);
 router.use(authController.restrictTo("admin"));
 router.get("/", userController.getUsers);
 router
