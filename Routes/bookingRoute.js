@@ -11,7 +11,12 @@ router
 router
   .route("/myBooking")
   .get(bookingController.getBookingForOwner, bookingController.getBookings);
-// router.use(authController.restrictTo("admin"));
+router.use(authController.restrictTo("admin"));
+router.get(
+  "/fiveLatest",
+  bookingController.getFiveBookings,
+  bookingController.getBookings
+);
 router
   .route("/:id")
   .get(bookingController.getBooking)

@@ -26,10 +26,19 @@ router
 
 router.get(
   "/inActiveProperty",
-  authController.restrictTo("admin"),
+  // authController.restrictTo("admin"),
   propertyController.inActive,
   propertyController.getAllProperty
 );
+router.get(
+  "/latestFiveProperty",
+  authController.restrictTo("admin"),
+  propertyController.getLatestFiveProperty,
+  propertyController.getAllProperty
+);
+
+router.get("/propertyByType", propertyController.typeStats);
+router.get("/propertyByPropertyType", propertyController.propertyTypeStats);
 router
   .route("/myProperty")
   .get(

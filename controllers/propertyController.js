@@ -53,6 +53,11 @@ exports.getTopFive = (req, res, next) => {
   req.query.limit = 4;
   next();
 };
+exports.getLatestFiveProperty = (req, res, next) => {
+  req.query.sort = "-createdAt";
+  req.query.limit = 5;
+  next();
+};
 exports.isActive = (req, res, next) => {
   req.query.isActive = true;
   next();
@@ -63,7 +68,7 @@ exports.inActive = (req, res, next) => {
 };
 exports.hiddenDocuments = (req, res, next) => {
   req.query.fields =
-    "title,price,isActive,imageCover,discount,location,type,propertyType,ratingsAverage,ratingsQuantity";
+    "title,price,isActive,imageCover,discount,location,type,propertyType,ratingsAverage,ratingsQuantity,area";
   next();
 };
 
@@ -126,20 +131,37 @@ exports.updateMyProperty = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.typeStats = async (req, res, next) => {
-//   const stats = await Property.aggregate([
-//     {
-//       $group: {
-//         _id: "$propertyType",
-//         numProperty: { $sum: 1 },
-//       },
-//     },
-//   ]);
+exports.typeStats = async (req, res, next) => {
+  const stats = await Property.aggregate([
+    {
+      $group: {
+        _id: "$type",
+        numProperty: { $sum: 1 },
+      },
+    },
+  ]);
 
-//   res.status(200).json({
-//     status: "success",
-//     data: {
-//       stats,
-//     },
-//   });
-// };
+  res.status(200).json({
+    status: "success",
+    data: {
+      stats,
+    },
+  });
+};
+exports.propertyTypeStats = async (req, res, next) => {
+  const stats = await Property.aggregate([
+    {
+      $group: {
+        _id: "$propertyType",
+        numProperty: { $sum: 1 },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      stats,
+    },
+  });
+};

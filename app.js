@@ -43,8 +43,6 @@ const io = require("socket.io")(8900, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
   });

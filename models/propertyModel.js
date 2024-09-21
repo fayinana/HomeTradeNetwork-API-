@@ -93,6 +93,10 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    area: {
+      type: Number,
+      required: [true, "area of property is required"],
+    },
     // taxDocument: {
     //   type: String,
     // },
