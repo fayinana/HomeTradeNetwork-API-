@@ -13,7 +13,10 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cookieParser());
 const corsOptions = {
-  origin: ["http://localhost:5173" , "https://home-trade-network-front-end.vercel.app"],
+  origin: [
+    "http://localhost:5173",
+    "https://home-trade-network-front-end.vercel.app",
+  ],
   credentials: true,
 };
 
@@ -37,9 +40,7 @@ const getUser = (userId) => {
 };
 
 const io = require("socket.io")(8900, {
-  cors: {
-    origin: "http://localhost:5173",
-  },
+  cors: corsOptions,
 });
 
 io.on("connection", (socket) => {
