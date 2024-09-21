@@ -23,7 +23,7 @@ const createSendToken = (user, statusCode, res) => {
     httpOnly: true,
     sameSite: "None",
   };
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
   user.password = undefined;
   res.status(statusCode).json({
@@ -60,6 +60,13 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = catchAsync(async (req, res, next) => {
+  res.clearCookie("jwt");
+  res.status(200).json({
+    status: "success",
+    message: "logout successfully",
+  });
+});
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (

@@ -10,15 +10,15 @@ const cookieParser = require("cookie-parser");
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./Utils/appError");
 const cors = require("cors");
+app.use(express.json());
+app.use(cookieParser());
 const corsOptions = {
-  origin: ["http://127.0.0.1:5173/"],
+  origin: ["http://localhost:5173"],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-app.use(express.json());
-app.use(cookieParser());
 // ///////////////////////////////
 
 let users = [];
