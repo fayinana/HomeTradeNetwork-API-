@@ -11,7 +11,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./Utils/appError");
 const cors = require("cors");
 const corsOptions = {
-  origin: "*",
+  origin: ["http://127.0.0.1:5173/"],
   credentials: true,
 };
 
