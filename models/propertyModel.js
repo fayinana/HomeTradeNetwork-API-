@@ -36,8 +36,14 @@ const propertySchema = new mongoose.Schema(
         default: "Point",
         enum: ["Point"],
       },
-      coordinates: [Number],
-      description: String,
+      coordinates: {
+        type: [Number],
+        default: [8.541711, 39.26896],
+      },
+      description: {
+        type: String,
+        default: "No description provided",
+      },
     },
     type: {
       type: String,
@@ -64,7 +70,8 @@ const propertySchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      require: true,
+      default:
+        "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/refs/heads/main/file/image/property/property-66e6e887f751aa32c46b02ea-1726413623271-1.jpeg",
     },
     images: [String],
     createdAt: {

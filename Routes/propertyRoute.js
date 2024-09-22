@@ -72,8 +72,8 @@ router
   .get(propertyController.getPropertyForOwner, propertyController.getProperty)
   .delete(propertyController.deleteMyProperty)
   .patch(
-    propertyController.uploadPropertyImages,
-    propertyController.resizePropertyImages,
+    propertyController.uploadPropertyPhoto,
+    propertyController.resizePropertyPhoto,
     propertyController.updateMyProperty
   );
 

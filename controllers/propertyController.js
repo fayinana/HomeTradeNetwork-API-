@@ -5,8 +5,9 @@ const catchAsync = require("../Utils/catchAsync");
 const Property = require("./../models/propertyModel");
 const factory = require("./handlerFactory");
 
-const multerStorage = multer.memoryStorage();
+const { default: axios } = require("axios");
 
+const multerStorage = multer.memoryStorage();
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
@@ -14,40 +15,46 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("not an image! please upload only image "), false);
   }
 };
+
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-exports.uploadPropertyImages = upload.fields([
-  { name: "imageCover", maxCount: 1 },
-  { name: "images", maxCount: 10 },
-]);
+exports.uploadPropertyPhoto = upload.single("imageCover");
 
-exports.resizePropertyImages = catchAsync(async (req, res, next) => {
-  const githubURL =
-    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/property/";
-  if (!req?.files?.images || !req?.files?.images) return next();
-  const imageCoverFileName = `property-${
-    req.params.id
-  }-${Date.now()}-cover.jpeg`;
-  await sharp(req.files.imageCover[0].buffer)
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_API_URL = process.env.GITHUB_API_URL.replace(
+  "<GITHUB_REPO>",
+  GITHUB_REPO
+);
+
+exports.resizePropertyPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+  const filename = `property-${req.user._id}-${Date.now()}.jpeg`;
+  const buffer = await sharp(req.file.buffer)
     .resize(2000, 1333)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
-    .toFile(`file/image/property/${imageCoverFileName}`);
-  req.body.imageCover = `${githubURL}${imageCoverFileName}`;
-  req.body.images = [];
-  await Promise.all(
-    req.files.images.map(async (file, i) => {
-      const filename = `property-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
-      await sharp(file.buffer)
-        .resize(2000, 1333)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`file/image/property/${filename}`);
-      req.body.images.push(`${githubURL}${filename}`);
-    })
+    .toBuffer();
+  const response = await axios.put(
+    `${GITHUB_API_URL}property/${filename}`,
+    {
+      message: `Upload photo ${filename}`,
+      content: buffer.toString("base64"),
+    },
+    {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    }
   );
+  if (response.status !== 201) {
+    return next(new AppError("Failed to upload image to GitHub", 500));
+  }
+  req.file.filename = filename;
   next();
 });
+
 exports.getTopFive = (req, res, next) => {
   req.query.sort = "price";
   req.query.limit = 4;
@@ -111,6 +118,10 @@ exports.deleteMyProperty = catchAsync(async (req, res, next) => {
   });
 });
 exports.updateMyProperty = catchAsync(async (req, res, next) => {
+  const githubURL =
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/refs/heads/main/file/image/property/";
+  if (req.file) req.body.imageCover = `${githubURL}${req.file.filename}`;
+
   const property = await Property.findOneAndUpdate(
     {
       owner: req.user._id,
