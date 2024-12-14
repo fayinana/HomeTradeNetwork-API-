@@ -22,8 +22,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// ///////////////////////////////
-
 let users = [];
 
 const addUser = (userId, socketId) => {
